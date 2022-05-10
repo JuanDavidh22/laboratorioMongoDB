@@ -37,7 +37,7 @@ public class Competitor implements Serializable{
     @Id
     @GeneratedValue
     @Field(name="_id")
-    private Long id;
+    private String id;
     
     @NotNull
     @Column(name = "create_at", updatable = false)
@@ -82,11 +82,11 @@ public class Competitor implements Serializable{
         this.createdAt = this.updatedAt = Calendar.getInstance();
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

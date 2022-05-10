@@ -54,6 +54,7 @@ public class CompetitorService {
     }
 
     @POST
+    @Path("/add")
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCompetitor(CompetitorDTO competitor) {
 
