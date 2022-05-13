@@ -8,21 +8,23 @@ package com.example.services;
 import com.example.PersistenceManager;
 import com.example.models.Competitor;
 import com.example.models.CompetitorDTO;
+import com.example.models.Producto;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.json.simple.JSONObject;
-
 
 /**
  *
@@ -47,16 +49,34 @@ public class CompetitorService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAll() {
-
         Query q = entityManager.createQuery("select u from Competitor u order by u.surname ASC");
         List<Competitor> competitors = q.getResultList();
         return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(competitors).build();
     }
 
-    @POST
-    @Path("/add")
+    @GET
+    @Path("/getProductos")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createCompetitor(CompetitorDTO competitor) {
+    public Response getProducts() {
+//        SELECT columna1, columna2 FROM nombre_de_tabla WHERE columnaX LIKE 'R%'
+        Query q = entityManager.createQuery("select u.producto from Competitor u WHERE u.producto LIKE 'A%'");
+        List<Competitor> competitors = q.getResultList();
+        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(competitors).build();
+    }
+
+    @GET
+    @Path("{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCompetitorsByName(@PathParam("name") String name) {
+        TypedQuery<Competitor> query = (TypedQuery<Competitor>) entityManager.createQuery("SELECT c FROM Competitor c WHERE c.name = :name");
+        List<Competitor> competitors = query.setParameter("name", name).getResultList();
+        return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(competitors).build();
+    }
+
+    @POST
+    @Path("/producto")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createProducto(CompetitorDTO competitor) {
 
         Competitor c = new Competitor();
         JSONObject rta = new JSONObject();
@@ -68,6 +88,7 @@ public class CompetitorService {
         c.setName(competitor.getName());
         c.setSurname(competitor.getSurname());
         c.setTelephone(competitor.getTelephone());
+        c.setProducto(competitor.getProducto());
 
         try {
             entityManager.getTransaction().begin();
@@ -82,15 +103,14 @@ public class CompetitorService {
             }
             c = null;
         } finally {
-        	entityManager.clear();
-        	entityManager.close();
+            entityManager.clear();
+            entityManager.close();
         }
         return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(rta.toJSONString()).build();
     }
-    
+
     @OPTIONS
     public Response cors(@javax.ws.rs.core.Context HttpHeaders requestHeaders) {
         return Response.status(200).header("Access-Control-Allow-Origin", "*").header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS").header("Access-Control-Allow-Headers", "AUTHORIZATION, content-type, accept").build();
     }
-
 }

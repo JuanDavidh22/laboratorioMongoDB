@@ -10,6 +10,7 @@ import com.sun.istack.NotNull;
 import java.io.Serializable;
 import java.util.Calendar;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -66,7 +67,12 @@ public class Competitor implements Serializable{
     private String country;
     
     private boolean winner;
-    //
+    
+    @Embedded
+            private Vehicle vehicle;
+    
+    @Embedded
+            private Producto producto;
     
     public Competitor(){
         
@@ -160,6 +166,22 @@ public class Competitor implements Serializable{
 
     public void setWinner(boolean winner) {
         this.winner = winner;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
     
 }
